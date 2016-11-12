@@ -8,7 +8,10 @@ class Typescript::Rails::Railtie < ::Rails::Railtie
       require 'sprockets'
 
       if Sprockets.respond_to?(:register_engine)
-        Sprockets.register_engine '.ts', Typescript::Rails::Template, silence_deprecation: true
+        ['.ts', Typescript::Rails::Template, silence_deprecation: true].tap do |arg|
+          arg.pop if Sprockets.method(:register_engine).arity < 3
+          Sprockets.register_engine *arg
+        end
       end
 
       if Sprockets.respond_to?(:register_transformer)
